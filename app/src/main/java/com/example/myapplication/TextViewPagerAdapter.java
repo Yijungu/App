@@ -84,7 +84,7 @@ public class TextViewPagerAdapter extends PagerAdapter {
                 TextView textView = (TextView) view.findViewById(R.id.ticket_page);
                 textView.setText("" + position);
 
-                textView.setOnClickListener(new View.OnClickListener() {
+                view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         page = Integer.parseInt(textView.getText().toString());
