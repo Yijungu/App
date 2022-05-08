@@ -1,11 +1,13 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -32,8 +34,6 @@ public class TextViewPagerAdapter extends PagerAdapter {
     DayDecorator dotDecorator;
     MaterialCalendarView calendarView;
     int page = 0;
-    int count = 3;
-    MainActivity main;
 
     public TextViewPagerAdapter() {
         calendar = new ArrayList<Calendar>();
@@ -47,12 +47,8 @@ public class TextViewPagerAdapter extends PagerAdapter {
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View cal = inflater.inflate(R.layout.activity_calendar, frameLayout, true);
         calendarView = (MaterialCalendarView) cal.findViewById(R.id.calendar_view);
-        calendar.add(new Calendar());
-        calendar.add(new Calendar());
-        calendar.add(new Calendar());
-        calendar.add(new Calendar());
-        calendar.add(new Calendar());
-        calendar.add(new Calendar());
+        for(int i = 0; i < getCount(); i++)
+            calendar.add(new Calendar());
         dotDecorator = new DayDecorator();
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
@@ -70,22 +66,33 @@ public class TextViewPagerAdapter extends PagerAdapter {
         View view = null;
 
         if (mContext != null) {
-            view = inflater.inflate(R.layout.page, container, false);
+            if (position == getCount()-1) {
+                view = inflater.inflate(R.layout.activity_search, container, false);
 
-            TextView textView = (TextView) view.findViewById(R.id.ticket_page);
-            textView.setText("" + position);
+                Button searchButton = (Button) view.findViewById(R.id.search_button);
 
-            textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    TextView ticket = (TextView) view.findViewById(R.id.ticket_page);
-                    int beforePage = page;
-                    page = Integer.parseInt(textView.getText().toString());
-                    dotDecorator.setDate(calendar.get(page).date);
-                    calendarView.addDecorator(dotDecorator);
-                    Log.v("test", "2 : " + calendar.size());
-                }
-            });
+                searchButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(mContext, Searchable.class);
+                        mContext.startActivity(intent);
+                    }
+                });
+            } else {
+                view = inflater.inflate(R.layout.page, container, false);
+
+                TextView textView = (TextView) view.findViewById(R.id.ticket_page);
+                textView.setText("" + position);
+
+                textView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        page = Integer.parseInt(textView.getText().toString());
+                        dotDecorator.setDate(calendar.get(page).date);
+                        calendarView.addDecorator(dotDecorator);
+                    }
+                });
+            }
         }
         // 뷰페이저에 추가.
         container.addView(view);
@@ -100,7 +107,8 @@ public class TextViewPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 6;    }
+        return 6;
+    }
 
     @Override
     public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {

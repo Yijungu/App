@@ -48,17 +48,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setPadding(300, 0, 300, 0);
         viewPager.setPageMargin(50);
 
-
-        Button search_button = (Button) findViewById(R.id.menu_view);
-        search_button.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), Searchable.class);
-                startActivity(intent);
-            }
-        });
-
     }
 
 
