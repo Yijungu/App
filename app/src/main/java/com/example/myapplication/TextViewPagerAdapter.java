@@ -47,7 +47,7 @@ public class TextViewPagerAdapter extends PagerAdapter {
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View cal = inflater.inflate(R.layout.activity_calendar, frameLayout, true);
         calendarView = (MaterialCalendarView) cal.findViewById(R.id.calendar_view);
-        for(int i = 0; i < getCount(); i++)
+        for(int i = 0; i < getCount()-2; i++)
             calendar.add(new Calendar());
         dotDecorator = new DayDecorator();
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
@@ -66,7 +66,20 @@ public class TextViewPagerAdapter extends PagerAdapter {
         View view = null;
 
         if (mContext != null) {
-            if (position == getCount()-1) {
+            if(position == 0){
+                view = inflater.inflate(R.layout.activity_total, container, false);
+
+                Button totalButton = (Button) view.findViewById(R.id.total_button);
+
+                totalButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dotDecorator.setDate(calendar.get(page).date);
+                        calendarView.addDecorator(dotDecorator);
+                    }
+                });
+            }
+            else if (position == getCount()-1) {
                 view = inflater.inflate(R.layout.activity_search, container, false);
 
                 Button searchButton = (Button) view.findViewById(R.id.search_button);
@@ -116,36 +129,3 @@ public class TextViewPagerAdapter extends PagerAdapter {
     }
 }
 
-class Calendar{
-
-    public ArrayList<CalendarDay> date;
-
-
-    public Calendar(){
-        date = new ArrayList<CalendarDay>();
-    }
-}
-
-class DayDecorator implements DayViewDecorator {
-
-    ArrayList<CalendarDay> date = new ArrayList<CalendarDay>();
-
-    public DayDecorator() {
-    }
-
-    public void setDate(ArrayList<CalendarDay> day){
-        date = day;
-    }
-
-    // true를 리턴 시 모든 요일에 내가 설정한 드로어블이 적용된다
-    @Override
-    public boolean shouldDecorate(CalendarDay day) {
-        return date.contains(day);
-    }
-
-    // 일자 선택 시 내가 정의한 드로어블이 적용되도록 한다
-    @Override
-    public void decorate(DayViewFacade view) {
-        view.addSpan(new DotSpan(5F, Color.parseColor("#1D872A")));  // 달력 안의 모든 숫자들이 볼드 처리됨
-    }
-}
