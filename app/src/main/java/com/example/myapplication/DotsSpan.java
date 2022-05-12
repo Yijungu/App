@@ -10,10 +10,14 @@ public class DotsSpan implements LineBackgroundSpan {
 
     private final float radius;
     private final int color;
+    private final float position;
+    private final int size;
 
-    public DotsSpan(float radius, int color) {
+    public DotsSpan(float radius, int color, float position, int size) {
         this.radius = radius;
         this.color = color;
+        this.position = position;
+        this.size = size;
     }
 
     @Override
@@ -27,7 +31,7 @@ public class DotsSpan implements LineBackgroundSpan {
         if (color != 0) {
             paint.setColor(color);
         }
-        canvas.drawCircle((left + right) / 2, bottom + radius, radius, paint);
+        canvas.drawCircle((left + right)*position / (size+1), bottom + radius, radius, paint);
         paint.setColor(oldColor);
     }
 }

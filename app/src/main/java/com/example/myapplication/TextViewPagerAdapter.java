@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,48 +14,43 @@ import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.prolificinteractive.materialcalendarview.CalendarDay;
-import com.prolificinteractive.materialcalendarview.DayViewDecorator;
-import com.prolificinteractive.materialcalendarview.DayViewFacade;
 import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
-import com.prolificinteractive.materialcalendarview.spans.DotSpan;
-
-import java.util.ArrayList;
-
 
 public class TextViewPagerAdapter extends PagerAdapter {
 
     // LayoutInflater 서비스 사용을 위한 Context 참조 저장.
     private Context mContext = null;
-    public ArrayList<Calendar> calendar;
     FrameLayout frameLayout;
     LayoutInflater inflater;
-    DayDecorator dotDecorator;
+    DayDecorator dotDecorator[];
     MaterialCalendarView calendarView;
+    String color[] = {"#FFFF00", "#0000FF", "#009900"};
+    int size = 3;
     int page = 0;
 
-    public TextViewPagerAdapter() {
-        calendar = new ArrayList<Calendar>();
+
+    public TextViewPagerAdapter(){
     }
 
     // Context를 전달받아 mContext에 저장하는 생성자 추가.
     public TextViewPagerAdapter(Context context, FrameLayout frameLayout) {
         mContext = context;
-        calendar = new ArrayList<Calendar>();
         this.frameLayout = frameLayout;
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View cal = inflater.inflate(R.layout.activity_calendar, frameLayout, true);
         calendarView = (MaterialCalendarView) cal.findViewById(R.id.calendar_view);
-        for(int i = 0; i < getCount()-2; i++)
-            calendar.add(new Calendar());
-        dotDecorator = new DayDecorator();
+        dotDecorator = new DayDecorator[size];
+        for(int i = 0; i < size; i++) {
+            dotDecorator[i] = new DayDecorator(color[i], size);
+        }
         calendarView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay day, boolean selected) {
-                Log.v("asd","asd");
-                calendar.get(page).date.add(day);
-                dotDecorator.setDate(calendar.get(page).date);
-                calendarView.addDecorator(dotDecorator);
+                if(page == -1) return;
+                if(dotDecorator[page].contain(day)) dotDecorator[page].deleteDay(day);
+                else dotDecorator[page].setDate(day);
+                calendarView.invalidateDecorators();
             }
         });
     }
@@ -74,8 +68,15 @@ public class TextViewPagerAdapter extends PagerAdapter {
                 totalButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        dotDecorator.setDate(calendar.get(page).date);
-                        calendarView.addDecorator(dotDecorator);
+                        page = -1;
+                        calendarView.removeDecorators();
+                        for(int i = 0; i < size; i++){
+                            dotDecorator[i].setPosition(i+1);
+                        }
+                        calendarView.addDecorators(dotDecorator);
+                        for(int i = 0; i < size; i++){
+                            dotDecorator[i].resetPosition();
+                        }
                     }
                 });
             }
@@ -95,14 +96,14 @@ public class TextViewPagerAdapter extends PagerAdapter {
                 view = inflater.inflate(R.layout.page, container, false);
 
                 TextView textView = (TextView) view.findViewById(R.id.ticket_page);
-                textView.setText("" + position);
+                textView.setText("" + (position-1));
 
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         page = Integer.parseInt(textView.getText().toString());
-                        dotDecorator.setDate(calendar.get(page).date);
-                        calendarView.addDecorator(dotDecorator);
+                        calendarView.removeDecorators();
+                        calendarView.addDecorator(dotDecorator[page]);
                     }
                 });
             }
@@ -120,7 +121,7 @@ public class TextViewPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 6;
+        return 5;
     }
 
     @Override

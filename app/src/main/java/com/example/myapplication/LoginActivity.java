@@ -55,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
                                 String userPass = jasonObject.getString("userPassword");
                                 Toast.makeText(getApplicationContext(), "로그인 성공", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.putExtra("log", "User");
                                 intent.putExtra("userID", userID);
                                 startActivity(intent);
                             }

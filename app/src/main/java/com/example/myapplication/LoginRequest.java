@@ -13,7 +13,7 @@ public class LoginRequest extends StringRequest {
     final static  private String URL="http://wnsrn4970.dothome.co.kr/Login2.php";
     private Map<String,String>map;
 
-    public LoginRequest(String userID, String userPassword, Response.Listener<String>listener){
+    public LoginRequest(String userID, String userPassword, Response.Listener<String> listener){
         super(Method.POST,URL,listener,null);
 
         map=new HashMap<>();
